@@ -10,7 +10,7 @@
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
                         <a class="nav-link"><router-link to="/">Home</router-link></a>
-                        <a class="nav-link"><router-link to="/detail">Detail</router-link></a>
+
                     </div>
                 </div>
             </div>

@@ -1,5 +1,3 @@
-import "bootstrap/dist/css/bootstrap.css"
-import "bootstrap/dist/js/bootstrap.js"
 import Vue from 'vue'
 import App from './App.vue'
 import './registerServiceWorker'
@@ -13,6 +11,9 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
+
+import "bootstrap/dist/css/bootstrap.css"
+import "bootstrap/dist/js/bootstrap.js"
 
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -30,4 +31,8 @@ library.add(faFlag, faTwitter, faFacebookF, faCircleDot, faCircle,faAngleDown, f
 
 /* add font awesome icon component */
 Vue.component('font-awesome-icon', FontAwesomeIcon)
+
+import ECharts from 'vue-echarts';
+import "echarts";
+Vue.component('v-chart', ECharts);
 

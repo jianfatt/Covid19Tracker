@@ -1,111 +1,131 @@
 <template>
   <div class="country">
-    <div class="country-first-container">
-      <div class="overview col col-lg-6">
+    <div class="country-container first-container">
+      <div class="stat overview col col-lg-6">
         <div class="overview-title">
           <h4>
-            <font-awesome-icon class="flag" icon="fa-regular fa-flag" />{{ info[0].country }} Overview
+            <font-awesome-icon class="icon" icon="fa-regular fa-flag" />{{ info.country }} Overview
           </h4>
           <p>Share:
-            <font-awesome-icon class="social-icon facebook-icon" icon="fa-brands fa-facebook-f" />
-            <font-awesome-icon class="social-icon twitter-icon" icon="fa-brands fa-twitter" />
+            <a href="#">
+              <font-awesome-icon class="icon facebook-icon" icon="fa-brands fa-facebook-f" />
+            </a>
+            <a href="#">
+              <font-awesome-icon class="icon twitter-icon" icon="fa-brands fa-twitter" />
+            </a>
           </p>
         </div>
 
         <div class="data-container">
 
           <div class="confirmed-data">
-            <p class="total-stat" style="color:red;">{{ info[0].totalConfirmed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') }} </p>
+            <p class="country-total-stat confirmed-stat">{{ numberRegex(info.totalConfirmed) }} </p>
             Confirmed
-            <p class="daily-stat" style="color:red;">{{ info[0].dailyConfirmed }} new cases</p>
+            <p class="country-daily-stat confirmed-stat">{{ numberRegex(info.dailyConfirmed) }} new cases</p>
           </div>
 
           <div class="recovered-data">
-            <p class="total-stat" style="color:green;">{{ info[0].totalRecovered.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') }} </p>
+            <p class="country-total-stat recovered-stat">{{ numberRegex(info.totalRecovered) }} </p>
             Recovered
           </div>
 
           <div class="deaths-data">
-            <p class="total-stat">{{ info[0].totalDeaths.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') }} </p>
+            <p class="country-total-stat deaths-stat">{{ numberRegex(info.totalDeaths) }} </p>
             Deaths
-            <p class="daily-stat">{{ info[0].dailyDeaths }} new deaths</p>
+            <p class="country-daily-stat deaths-stat">{{ numberRegex(info.dailyDeaths) }} new deaths</p>
           </div>
 
         </div>
       </div>
 
-      <div class="fatality col">
+      <div class="stat fatality col">
         <h5>Fatality Rate</h5>
       </div>
 
-      <div class="recovery col">
+      <div class="stat recovery col">
         <h5>Recovery Rate</h5>
       </div>
     </div>
 
-    <div class="country-second-container">
-      <div class="critical col">
+    <div class="country-container second-container">
+      <div class="stat critical col">
         <h5>Critical Cases treated in ICU</h5>
-        <p class="cases-number">{{ info[0].totalCritical }}</p>
-        <p><span style="color:red">{{ ((info[0].totalCritical/info[0].totalConfirmed)*100).toFixed(1) }}%</span> of total cases</p>
+        <p class="cases-number">{{ numberRegex(info.totalCritical) }}</p>
+        <p><span class="result">{{ percentageCalculation(info.totalCritical / info.totalConfirmed) }}%</span> of total
+          cases</p>
       </div>
 
-      <div class="daily-receiving col">
+      <div class="stat daily-receiving col">
         <h5>Daily Cases Receiving Treatment</h5>
-        <p class="cases-number">{{ info[0].activeCases }}</p>
-        <p><span style="color:red">{{ ((info[0].activeCases/info[0].totalConfirmed)*100).toFixed(1) }}%</span> of total cases</p>
+        <p class="cases-number">{{ numberRegex(info.activeCases) }}</p>
+        <p><span class="result">{{ percentageCalculation(info.activeCases / info.totalConfirmed) }}%</span> of total
+          cases
+        </p>
       </div>
 
-      <div class="daily-confirmed col">
+      <div class="stat daily-confirmed col">
         <h5>Daily Confirmed Cases</h5>
-        <p class="cases-number">{{ info[0].totalConfirmedPerMillionPopulation }}</p>
+        <p class="cases-number">{{ numberRegex(info.totalConfirmedPerMillionPopulation) }}</p>
         <p>Per Million Population</p>
       </div>
     </div>
+
+    <barChart></barChart>
   </div>
 </template>
 
 <script>
+import barChart from "@/components/Chart.vue"
+
 export default {
   name: '',
+  components: { 
+      "barChart": barChart
+    },
   data() {
     return {
       info: null,
-      countryCode:this.$route.params.countryCode,
+      countryCode: this.$route.params.countryCode,
       loading: true,
-      errored: false
+      errored: false,
     }
   },
-  mounted() {
+  created() {
     this.getCountryData();
+    this.displayChart();
   },
   methods: {
     getCountryData() {
       const axios = require('axios').default;
       axios
-        .get('https://api.coronatracker.com/v3/stats/worldometer/country?countryCode='+this.countryCode)
+        .get('https://api.coronatracker.com/v3/stats/worldometer/country?countryCode=' + this.countryCode)
         .then(response => {
-          this.info = response.data
-          console.log(response.data)
+          this.info = response.data[0]
+          console.log(response.data[0])
         })
         .catch(error => {
           console.log(error)
           this.errored = true
         })
         .finally(() => this.loading = false)
-      }
+    },
+    numberRegex(value) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    },
+    percentageCalculation(statValue) {
+      return (statValue * 100).toFixed(1);
+    }
   }
 }
 </script>
 
-<style>
+<style scoped>
 .country {
   width: 100%;
   padding: 0 100px;
 }
 
-.country-first-container,
-.country-second-container {
+.country-container {
   margin: auto;
   display: flex;
   flex-wrap: wrap;
@@ -125,8 +145,7 @@ export default {
   font-weight: 600;
 }
 
-.flag,
-.social-icon {
+.icon {
   padding: 0 5px;
 }
 
@@ -143,23 +162,30 @@ export default {
   font-weight: bold;
 }
 
-.overview,
-.fatality,
-.recovery,
-.critical,
-.daily-receiving,
-.daily-confirmed {
+.stat {
   border: 1px solid grey;
   border-radius: 5px;
   margin: 10px;
   padding: 5px 10px;
 }
 
-.total-stat {
+.country-total-stat {
   font-size: 25px;
 }
 
-.daily-stat {
+.country-daily-stat {
   font-size: 13px;
+}
+
+.confirmed-stat {
+  color: red;
+}
+
+.recovered-stat {
+  color: green;
+}
+
+.result {
+  color: red;
 }
 </style>
