@@ -1,73 +1,75 @@
 <template>
   <div class="country">
-    <div class="country-container first-container">
-      <div class="stat overview col col-lg-6">
-        <div class="overview-title">
-          <h4>
-            <font-awesome-icon class="icon" icon="fa-regular fa-flag" />{{ info.country }} Overview
-          </h4>
-          <p>Share:
-            <a href="#">
-              <font-awesome-icon class="icon facebook-icon" icon="fa-brands fa-facebook-f" />
-            </a>
-            <a href="#">
-              <font-awesome-icon class="icon twitter-icon" icon="fa-brands fa-twitter" />
-            </a>
-          </p>
+    <div v-if="info">
+      <div class="country-container first-container">
+          <div class="stat overview col col-lg-6">
+            <div class="overview-title">
+              <h4>
+                <font-awesome-icon class="icon" icon="fa-regular fa-flag" />{{ info.country }} Overview
+              </h4>
+              <p>Share:
+                <a href="#">
+                  <font-awesome-icon class="icon facebook-icon" icon="fa-brands fa-facebook-f" />
+                </a>
+                <a href="#">
+                  <font-awesome-icon class="icon twitter-icon" icon="fa-brands fa-twitter" />
+                </a>
+              </p>
+            </div>
+
+            <div class="data-container">
+
+              <div class="confirmed-data">
+                <p class="country-total-stat confirmed-stat">{{ numberRegex(info.totalConfirmed) }} </p>
+                Confirmed
+                <p class="country-daily-stat confirmed-stat">{{ numberRegex(info.dailyConfirmed) }} new cases</p>
+              </div>
+
+              <div class="recovered-data">
+                <p class="country-total-stat recovered-stat">{{ numberRegex(info.totalRecovered) }} </p>
+                Recovered
+              </div>
+
+              <div class="deaths-data">
+                <p class="country-total-stat deaths-stat">{{ numberRegex(info.totalDeaths) }} </p>
+                Deaths
+                <p class="country-daily-stat deaths-stat">{{ numberRegex(info.dailyDeaths) }} new deaths</p>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="stat fatality col">
+            <h5>Fatality Rate</h5>
+          </div>
+
+          <div class="stat recovery col">
+            <h5>Recovery Rate</h5>
+          </div>
         </div>
 
-        <div class="data-container">
-
-          <div class="confirmed-data">
-            <p class="country-total-stat confirmed-stat">{{ numberRegex(info.totalConfirmed) }} </p>
-            Confirmed
-            <p class="country-daily-stat confirmed-stat">{{ numberRegex(info.dailyConfirmed) }} new cases</p>
+        <div class="country-container second-container">
+          <div class="stat critical col">
+            <h5>Critical Cases treated in ICU</h5>
+            <p class="cases-number">{{ numberRegex(info.totalCritical) }}</p>
+            <p><span class="result">{{ percentageCalculation(info.totalCritical / info.totalConfirmed) }}%</span> of total
+              cases</p>
           </div>
 
-          <div class="recovered-data">
-            <p class="country-total-stat recovered-stat">{{ numberRegex(info.totalRecovered) }} </p>
-            Recovered
+          <div class="stat daily-receiving col">
+            <h5>Daily Cases Receiving Treatment</h5>
+            <p class="cases-number">{{ numberRegex(info.activeCases) }}</p>
+            <p><span class="result">{{ percentageCalculation(info.activeCases / info.totalConfirmed) }}%</span> of total
+              cases
+            </p>
           </div>
 
-          <div class="deaths-data">
-            <p class="country-total-stat deaths-stat">{{ numberRegex(info.totalDeaths) }} </p>
-            Deaths
-            <p class="country-daily-stat deaths-stat">{{ numberRegex(info.dailyDeaths) }} new deaths</p>
+          <div class="stat daily-confirmed col">
+            <h5>Daily Confirmed Cases</h5>
+            <p class="cases-number">{{ numberRegex(info.totalConfirmedPerMillionPopulation) }}</p>
+            <p>Per Million Population</p>
           </div>
-
         </div>
-      </div>
-
-      <div class="stat fatality col">
-        <h5>Fatality Rate</h5>
-      </div>
-
-      <div class="stat recovery col">
-        <h5>Recovery Rate</h5>
-      </div>
-    </div>
-
-    <div class="country-container second-container">
-      <div class="stat critical col">
-        <h5>Critical Cases treated in ICU</h5>
-        <p class="cases-number">{{ numberRegex(info.totalCritical) }}</p>
-        <p><span class="result">{{ percentageCalculation(info.totalCritical / info.totalConfirmed) }}%</span> of total
-          cases</p>
-      </div>
-
-      <div class="stat daily-receiving col">
-        <h5>Daily Cases Receiving Treatment</h5>
-        <p class="cases-number">{{ numberRegex(info.activeCases) }}</p>
-        <p><span class="result">{{ percentageCalculation(info.activeCases / info.totalConfirmed) }}%</span> of total
-          cases
-        </p>
-      </div>
-
-      <div class="stat daily-confirmed col">
-        <h5>Daily Confirmed Cases</h5>
-        <p class="cases-number">{{ numberRegex(info.totalConfirmedPerMillionPopulation) }}</p>
-        <p>Per Million Population</p>
-      </div>
     </div>
 
     <barChart></barChart>
@@ -92,7 +94,6 @@ export default {
   },
   created() {
     this.getCountryData();
-    this.displayChart();
   },
   methods: {
     getCountryData() {

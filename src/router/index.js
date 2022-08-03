@@ -21,7 +21,7 @@ const routes = [
     path: '/country/:countryCode',
     name: 'country',
     component: CountryView
-  }
+  },
 ]
 
 const router = new VueRouter({

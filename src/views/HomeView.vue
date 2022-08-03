@@ -79,7 +79,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="countryList in displayCountry">
+            <tr v-for="countryList in displayCountry" :key="countryList">
               <td><router-link :to="{ path:'country/' + countryList.countryCode  }">{{ countryList.country }}</router-link></td>
               <td>{{ countryList.totalConfirmed }}</td>
               <td>{{ countryList.totalRecovered }}</td>
