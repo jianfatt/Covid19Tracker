@@ -24,10 +24,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 /* import specific icons */
 import { faFlag, faCircleDot, faCircle} from "@fortawesome/free-regular-svg-icons"
 import { faFacebookF, faTwitter } from "@fortawesome/free-brands-svg-icons"
-import { faAngleDown, faGlobe } from "@fortawesome/free-solid-svg-icons"
+import { faAngleDown, faGlobe,faCircleInfo } from "@fortawesome/free-solid-svg-icons"
 
 /* add icons to the library */
-library.add(faFlag, faTwitter, faFacebookF, faCircleDot, faCircle,faAngleDown, faGlobe)
+library.add(faFlag, faTwitter, faFacebookF, faCircleDot, faCircle,faAngleDown, faGlobe, faCircleInfo)
 
 /* add font awesome icon component */
 Vue.component('font-awesome-icon', FontAwesomeIcon)
@@ -35,4 +35,5 @@ Vue.component('font-awesome-icon', FontAwesomeIcon)
 import ECharts from 'vue-echarts';
 import "echarts";
 Vue.component('v-chart', ECharts);
+
 

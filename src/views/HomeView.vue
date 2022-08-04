@@ -37,7 +37,8 @@
               </router-link>
             </li>
             <li>
-              <router-link v-for="countryList in countryList" :to="{ path:'country/' + countryList.countryCode  }" class="dropdown-item">
+              <router-link v-for="countryList in countryList" :to="{ path: 'country/' + countryList.countryCode }"
+                class="dropdown-item">
                 <font-awesome-icon class="icon flag-icon" icon="fa-regular fa-flag" /> {{ countryList.country }}
               </router-link>
             </li>
@@ -65,33 +66,36 @@
     </div>
 
     <div class="table-container">
-      <h4>COUNTRIES AFFECTED</h4>
-      <p class="source">Sources: WHO, CDC, ECDC, NHC of the PRC, JHU CSSE, DXY, QQ, and various international media</p>
-      <p class="hint">Hint: Click on a country for more info</p>
+      <h4 class="header">COUNTRIES AFFECTED</h4>
+      <p class="subtext">Sources: WHO, CDC, ECDC, NHC of the PRC, JHU CSSE, DXY, QQ, and various international media</p>
+      <p class="hint"><font-awesome-icon icon="fa-solid fa-circle-info"  class="icon hint-icon"/>Hint: Click on a country for more info</p>
 
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">Country</th>
-              <th scope="col">Confirmed</th>
-              <th scope="col">Recovered</th>
-              <th scope="col">Deaths</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="countryList in displayCountry" :key="countryList">
-              <td><router-link :to="{ path:'country/' + countryList.countryCode  }">{{ countryList.country }}</router-link></td>
-              <td>{{ countryList.totalConfirmed }}</td>
-              <td>{{ countryList.totalRecovered }}</td>
-              <td>{{ countryList.totalDeaths }}</td>
-            </tr>      
-          </tbody>
-        </table>
+      <table class="table">
+        <thead class="table-header">
+          <tr>
+            <th scope="col" class="table-data">Country</th>
+            <th scope="col" class="table-data">Confirmed</th>
+            <th scope="col" class="table-data">Recovered</th>
+            <th scope="col" class="table-data">Deaths</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="countryList in displayCountry">
+            <td class="table-data table-country">
+              <router-link :to="{ path: 'country/' + countryList.countryCode }" class="country-link">{{
+                  countryList.country
+              }}</router-link>
+            </td>
+            <td class="table-data table-stat-data">{{ countryList.totalConfirmed }}</td>
+            <td class="table-data table-stat-data">{{ countryList.totalRecovered }}</td>
+            <td class="table-data table-stat-data">{{ countryList.totalDeaths }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="subtext">* Cases identified on a cruise ship currently in Japanese territorial waters.</p>
+      <div class="text-center"><button class="full-list-button" @click="showLessCountries = !showLessCountries">Full List here</button></div>
     </div>
-    <p>* Cases identified on a cruise ship currently in Japanese territorial waters.</p>
-    <button @click="showLessCountries = !showLessCountries">Full List here</button>
 
-    <barChart></barChart>
   </div>
 </template>
 
@@ -99,61 +103,61 @@
 const axios = require('axios').default;
 
 export default {
-    name: "",
-    data() {
-        return {
-            info: [],
-            countryList: [],
-            loading: true,
-            errored: false,
-            showLessCountries: true,
-        };
+  name: "",
+  data() {
+    return {
+      info: [],
+      countryList: [],
+      loading: true,
+      errored: false,
+      showLessCountries: true,
+    };
+  },
+  created() {
+    this.getGlobalData();
+    this.getAllCountryData();
+  },
+  computed: {
+    displayCountry: function () {
+      if (this.showLessCountries) {
+        return this.countryList.slice(0, 15);
+      }
+      else {
+        return this.countryList;
+      }
+    }
+  },
+  methods: {
+    numberRegex(value) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
-    created() {
-        this.getGlobalData();
-        this.getAllCountryData();
+    getGlobalData() {
+      axios
+        .get("https://api.coronatracker.com/v3/stats/worldometer/global")
+        .then(response => {
+          this.info = response.data;
+          console.log(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+          this.errored = true;
+        })
+        .finally(() => this.loading = false);
     },
-    computed: {
-        displayCountry: function () {
-            if (this.showLessCountries) {
-                return this.countryList.slice(0, 15);
-            }
-            else {
-                return this.countryList;
-            }
-        }
+    getAllCountryData() {
+      axios
+        .get("https://api.coronatracker.com/v3/stats/worldometer/country")
+        .then(response => {
+          this.countryList = response.data;
+          console.log(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+          this.errored = true;
+        })
+        .finally(() => this.loading = false);
     },
-    methods: {
-        numberRegex(value) {
-            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        },
-        getGlobalData() {
-            axios
-                .get("https://api.coronatracker.com/v3/stats/worldometer/global")
-                .then(response => {
-                this.info = response.data;
-                console.log(response.data);
-            })
-                .catch(error => {
-                console.log(error);
-                this.errored = true;
-            })
-                .finally(() => this.loading = false);
-        },
-        getAllCountryData() {
-            axios
-                .get("https://api.coronatracker.com/v3/stats/worldometer/country")
-                .then(response => {
-                this.countryList = response.data;
-                console.log(response.data);
-            })
-                .catch(error => {
-                console.log(error);
-                this.errored = true;
-            })
-                .finally(() => this.loading = false);
-        },
-    },
+  },
 }
 </script>
 
@@ -303,5 +307,68 @@ export default {
 
 .search-bar {
   border: none;
+}
+
+.header{
+  color: #108885;
+  border-left: 5px solid #108885;
+  padding: 10px 0;
+  text-indent: 20px;
+}
+
+.subtext{
+  font-size: 12px;
+  color: gray;
+  font-weight: 500;
+}
+
+.hint{
+  color: blue;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.table-container {
+  padding: 30px 0;
+}
+
+.table-header {
+  text-align: center;
+}
+
+.table-stat-data {
+  text-align: center;
+}
+
+.table-data {
+  border: 1px solid grey;
+}
+
+.table-country {
+  width: 300px;
+  background: #EDF2F7;
+}
+
+.country-link {
+  text-decoration: none;
+  color: black;
+  font-weight: 600;
+}
+
+.table-country:hover {
+  background: #108885;
+}
+
+.country-link:hover {
+  color: white;
+}
+
+.full-list-button{
+  border: none;
+  background: white;
+  color: blue;
+  font-size: 20px;
+  font-weight: 600;
+  text-decoration: underline;
 }
 </style>
