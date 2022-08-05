@@ -98,8 +98,13 @@ export default {
   methods: {
     getCountryData() {
       const axios = require('axios').default;
-      axios
-        .get('https://api.coronatracker.com/v3/stats/worldometer/country?countryCode=' + this.countryCode)
+      axios({
+        method: 'GET',
+        url:'https://api.coronatracker.com/v3/stats/worldometer/country/',
+        params:{ 
+          countryCode: this.countryCode
+          }
+      })        
         .then(response => {
           this.info = response.data[0]
           console.log(response.data[0])

@@ -6,9 +6,13 @@
 const axios = require('axios').default;
 
 import { format, parseISO, endOfToday, subWeeks } from 'date-fns'
+import ECharts from 'vue-echarts';
 
 export default {
   name: 'barChart',
+  components: { 
+      'v-chart': ECharts
+    },
   data() {
     return {
       chartOptionsBar: {
@@ -47,7 +51,7 @@ export default {
             type: 'bar',
             name: 'Deaths',
             data: []
-          }]
+          }],
       },
       countryCode: this.$route.params.countryCode,
       startDate: format(subWeeks(endOfToday(), 8), 'yyyy-MM-dd'),
@@ -62,38 +66,22 @@ export default {
   },
   methods: {
     getChartData() {
-      axios
-        .get('https://api.coronatracker.com/v5/analytics/newcases/country?countryCode=' + this.countryCode + '&startDate=' + this.startDate + '&endDate=' + this.endDate)
+      axios({
+        method: 'GET',
+        url: 'https://api.coronatracker.com/v5/analytics/newcases/country',
+        params:{
+          countryCode: this.countryCode,
+          startDate: this.startDate,
+          endDate: this.endDate
+        }
+      })
         .then(response => {
           this.chartData = response.data
-          console.log("chart data", response.data)
-
-          let latest_cases = [];
-          response.data.forEach((latest) => {
-            this.chartOptionsBar.xAxis.data = latest_cases
-            latest_cases.push(format(parseISO(latest.last_updated), 'dd MMM'));
-            console.log("latest cases", latest.last_updated)
-          });
-
-          let confirmed_cases = [];
-          response.data.forEach((confirmed) => {
-            this.chartOptionsBar.series[0].data = confirmed_cases
-            confirmed_cases.push(confirmed.new_infections);
-            console.log("confirmed cases", confirmed.new_infections)
-          });
-
-          let recovered_cases = [];
-          response.data.forEach((recovered) => {
-            this.chartOptionsBar.series[1].data = recovered_cases
-            recovered_cases.push(recovered.new_recovered);
-            console.log("recovered cases", recovered.new_recovered)
-          });
-
-          let deaths_cases = [];
-          response.data.forEach((deaths) => {
-            this.chartOptionsBar.series[2].data = deaths_cases
-            deaths_cases.push(deaths.new_deaths);
-            console.log("deaths cases", deaths.new_deaths)
+          response.data.forEach((item) => {
+            this.chartOptionsBar.xAxis.data.push(format(parseISO(item.last_updated), 'dd MMM'));
+            this.chartOptionsBar.series[0].data.push(item.new_infections);
+            this.chartOptionsBar.series[1].data.push(item.new_recovered);
+            this.chartOptionsBar.series[2].data.push(item.new_deaths);
           });
 
         }).catch(error => {
@@ -102,6 +90,7 @@ export default {
         })
         .finally(() => this.loading = false)
     },
+    
   }
 }
 </script>

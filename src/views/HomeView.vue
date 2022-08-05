@@ -62,48 +62,29 @@
       </div>
 
       <p class="details"><a class="details-link" href="#">more details</a></p>
-
     </div>
-
-    <div class="table-container">
-      <h4 class="header">COUNTRIES AFFECTED</h4>
-      <p class="subtext">Sources: WHO, CDC, ECDC, NHC of the PRC, JHU CSSE, DXY, QQ, and various international media</p>
-      <p class="hint"><font-awesome-icon icon="fa-solid fa-circle-info"  class="icon hint-icon"/>Hint: Click on a country for more info</p>
-
-      <table class="table">
-        <thead class="table-header">
-          <tr>
-            <th scope="col" class="table-data">Country</th>
-            <th scope="col" class="table-data">Confirmed</th>
-            <th scope="col" class="table-data">Recovered</th>
-            <th scope="col" class="table-data">Deaths</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="countryList in displayCountry">
-            <td class="table-data table-country">
-              <router-link :to="{ path: 'country/' + countryList.countryCode }" class="country-link">{{
-                  countryList.country
-              }}</router-link>
-            </td>
-            <td class="table-data table-stat-data">{{ countryList.totalConfirmed }}</td>
-            <td class="table-data table-stat-data">{{ countryList.totalRecovered }}</td>
-            <td class="table-data table-stat-data">{{ countryList.totalDeaths }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <p class="subtext">* Cases identified on a cruise ship currently in Japanese territorial waters.</p>
-      <div class="text-center"><button class="full-list-button" @click="showLessCountries = !showLessCountries">Full List here</button></div>
-    </div>
-
+      <casesTable></casesTable>
   </div>
 </template>
 
 <script>
 const axios = require('axios').default;
+import tables from "@/components/table.vue"
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faFlag, faTwitter, faFacebookF, faCircleDot, faCircle,faAngleDown, faGlobe)
+
+import { faFlag, faCircleDot, faCircle} from "@fortawesome/free-regular-svg-icons"
+import { faFacebookF, faTwitter } from "@fortawesome/free-brands-svg-icons"
+import { faAngleDown, faGlobe } from "@fortawesome/free-solid-svg-icons"
 
 export default {
   name: "",
+  components: { 
+      "casesTable": tables,
+      'font-awesome-icon': FontAwesomeIcon
+    },
   data() {
     return {
       info: [],
@@ -111,29 +92,24 @@ export default {
       loading: true,
       errored: false,
       showLessCountries: true,
+
+      countryLimitCount: 15
     };
   },
   created() {
     this.getGlobalData();
     this.getAllCountryData();
   },
-  computed: {
-    displayCountry: function () {
-      if (this.showLessCountries) {
-        return this.countryList.slice(0, 15);
-      }
-      else {
-        return this.countryList;
-      }
-    }
-  },
   methods: {
-    numberRegex(value) {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    numberRegex(x) {
+      let value = x?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return value
     },
     getGlobalData() {
-      axios
-        .get("https://api.coronatracker.com/v3/stats/worldometer/global")
+      axios({
+        method: 'GET',
+        url: "https://api.coronatracker.com/v3/stats/worldometer/global",
+      })
         .then(response => {
           this.info = response.data;
           console.log(response.data);
@@ -145,9 +121,11 @@ export default {
         .finally(() => this.loading = false);
     },
     getAllCountryData() {
-      axios
-        .get("https://api.coronatracker.com/v3/stats/worldometer/country")
-        .then(response => {
+      axios({
+        method: 'GET',
+        url: 'https://api.coronatracker.com/v3/stats/worldometer/country',
+      })
+      .then(response => {
           this.countryList = response.data;
           console.log(response.data);
         })
@@ -266,7 +244,9 @@ export default {
 
 .dropdown-menu {
   width: 100%;
+  height: 450px;
   background: #EDF2F7;
+  overflow: hidden auto;
 }
 
 .dropdown-item {
@@ -276,7 +256,7 @@ export default {
 }
 
 .icon {
-  padding: 0 5px 0 10px;
+  margin: 0 5px 0 10px;
 }
 
 .live-icon {
@@ -307,68 +287,5 @@ export default {
 
 .search-bar {
   border: none;
-}
-
-.header{
-  color: #108885;
-  border-left: 5px solid #108885;
-  padding: 10px 0;
-  text-indent: 20px;
-}
-
-.subtext{
-  font-size: 12px;
-  color: gray;
-  font-weight: 500;
-}
-
-.hint{
-  color: blue;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.table-container {
-  padding: 30px 0;
-}
-
-.table-header {
-  text-align: center;
-}
-
-.table-stat-data {
-  text-align: center;
-}
-
-.table-data {
-  border: 1px solid grey;
-}
-
-.table-country {
-  width: 300px;
-  background: #EDF2F7;
-}
-
-.country-link {
-  text-decoration: none;
-  color: black;
-  font-weight: 600;
-}
-
-.table-country:hover {
-  background: #108885;
-}
-
-.country-link:hover {
-  color: white;
-}
-
-.full-list-button{
-  border: none;
-  background: white;
-  color: blue;
-  font-size: 20px;
-  font-weight: 600;
-  text-decoration: underline;
 }
 </style>
