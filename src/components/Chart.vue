@@ -6,13 +6,9 @@
 const axios = require('axios').default;
 
 import { format, parseISO, endOfToday, subWeeks } from 'date-fns'
-import ECharts from 'vue-echarts';
 
 export default {
   name: 'barChart',
-  components: { 
-      'v-chart': ECharts
-    },
   data() {
     return {
       chartOptionsBar: {

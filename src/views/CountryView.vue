@@ -70,9 +70,8 @@
             <p>Per Million Population</p>
           </div>
         </div>
+      <barChart></barChart>
     </div>
-
-    <barChart></barChart>
   </div>
 </template>
 

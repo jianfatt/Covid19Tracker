@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home" v-if="info">
     <div class="global-container">
       <div class="global-overview col">
         <div class="global-overview-title">
@@ -70,24 +70,15 @@
 <script>
 const axios = require('axios').default;
 import tables from "@/components/table.vue"
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
-library.add(faFlag, faTwitter, faFacebookF, faCircleDot, faCircle,faAngleDown, faGlobe)
-
-import { faFlag, faCircleDot, faCircle} from "@fortawesome/free-regular-svg-icons"
-import { faFacebookF, faTwitter } from "@fortawesome/free-brands-svg-icons"
-import { faAngleDown, faGlobe } from "@fortawesome/free-solid-svg-icons"
 
 export default {
   name: "",
   components: { 
       "casesTable": tables,
-      'font-awesome-icon': FontAwesomeIcon
     },
   data() {
     return {
-      info: [],
+      info: null,
       countryList: [],
       loading: true,
       errored: false,
